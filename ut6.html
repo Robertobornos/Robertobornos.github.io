@@ -1,0 +1,667 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>UT6 – App Nativa con Capacitor | Roberto Pinto Gutiérrez</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:ital,wght@0,300;0,400;0,500;1,300&display=swap" rel="stylesheet" />
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --teal:      #2DD4BF;
+      --teal-dark: #0F9485;
+      --purple:    #7C3AED;
+      --dark:      #0A0F1E;
+      --dark2:     #111827;
+      --card:      #161D2F;
+      --border:    rgba(45,212,191,0.18);
+      --text:      #E2E8F0;
+      --muted:     #94A3B8;
+      --success:   #22C55E;
+      --warning:   #F59E0B;
+    }
+
+    html { scroll-behavior: smooth; }
+
+    body {
+      background: var(--dark);
+      color: var(--text);
+      font-family: 'DM Sans', sans-serif;
+      font-size: 1rem;
+      line-height: 1.7;
+      overflow-x: hidden;
+    }
+
+    /* ── NAV ─────────────────────────────────────────────── */
+    nav {
+      position: fixed; top: 0; left: 0; right: 0; z-index: 100;
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 1rem 2rem;
+      background: rgba(10,15,30,0.85);
+      backdrop-filter: blur(12px);
+      border-bottom: 1px solid var(--border);
+    }
+    .nav-logo {
+      font-family: 'Syne', sans-serif;
+      font-weight: 800; font-size: 1.1rem;
+      color: var(--teal); text-decoration: none;
+    }
+    .nav-links { display: flex; gap: 1.5rem; list-style: none; }
+    .nav-links a {
+      color: var(--muted); text-decoration: none;
+      font-size: 0.9rem; font-weight: 500;
+      transition: color .2s;
+    }
+    .nav-links a:hover { color: var(--teal); }
+
+    /* ── HERO ────────────────────────────────────────────── */
+    .hero {
+      min-height: 100vh;
+      display: flex; flex-direction: column;
+      justify-content: center; align-items: flex-start;
+      padding: 8rem 2rem 4rem;
+      max-width: 900px; margin: 0 auto;
+      position: relative;
+    }
+    .hero::before {
+      content: '';
+      position: absolute; top: 10%; right: -10%;
+      width: 500px; height: 500px;
+      background: radial-gradient(circle, rgba(45,212,191,0.12) 0%, transparent 70%);
+      pointer-events: none;
+    }
+    .hero-tag {
+      display: inline-flex; align-items: center; gap: 8px;
+      background: rgba(45,212,191,0.1);
+      border: 1px solid var(--border);
+      border-radius: 100px;
+      padding: 6px 16px;
+      font-size: 0.8rem; font-weight: 500;
+      color: var(--teal);
+      margin-bottom: 1.5rem;
+      animation: fadeUp .6s ease both;
+    }
+    .hero-tag .dot {
+      width: 6px; height: 6px;
+      border-radius: 50%; background: var(--teal);
+      animation: pulse 2s infinite;
+    }
+    @keyframes pulse {
+      0%,100% { opacity: 1; transform: scale(1); }
+      50% { opacity: .5; transform: scale(1.4); }
+    }
+    .hero h1 {
+      font-family: 'Syne', sans-serif;
+      font-size: clamp(2.4rem, 6vw, 4rem);
+      font-weight: 800; line-height: 1.1;
+      margin-bottom: 1.2rem;
+      animation: fadeUp .7s .1s ease both;
+    }
+    .hero h1 span { color: var(--teal); }
+    .hero p {
+      font-size: 1.15rem; color: var(--muted);
+      max-width: 600px; margin-bottom: 2rem;
+      animation: fadeUp .7s .2s ease both;
+    }
+    .hero-meta {
+      display: flex; gap: 1.5rem; flex-wrap: wrap;
+      animation: fadeUp .7s .3s ease both;
+    }
+    .hero-meta span {
+      font-size: 0.85rem; color: var(--muted);
+      display: flex; align-items: center; gap: 6px;
+    }
+    .hero-meta strong { color: var(--text); }
+
+    @keyframes fadeUp {
+      from { opacity: 0; transform: translateY(20px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+
+    /* ── SECTION ─────────────────────────────────────────── */
+    section {
+      max-width: 900px; margin: 0 auto;
+      padding: 4rem 2rem;
+    }
+    .section-label {
+      font-size: 0.75rem; font-weight: 600;
+      letter-spacing: .12em; text-transform: uppercase;
+      color: var(--teal); margin-bottom: .75rem;
+    }
+    h2 {
+      font-family: 'Syne', sans-serif;
+      font-size: 1.9rem; font-weight: 700;
+      margin-bottom: 1.5rem; line-height: 1.2;
+    }
+    h3 {
+      font-family: 'Syne', sans-serif;
+      font-size: 1.2rem; font-weight: 700;
+      margin-bottom: .75rem; color: var(--text);
+    }
+    p { color: var(--muted); margin-bottom: 1rem; }
+    p strong { color: var(--text); }
+
+    /* ── DIVIDER ─────────────────────────────────────────── */
+    .divider {
+      width: 100%; height: 1px;
+      background: linear-gradient(90deg, transparent, var(--border), transparent);
+      margin: 0 2rem;
+    }
+
+    /* ── CARDS GRID ──────────────────────────────────────── */
+    .cards {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+      gap: 1.25rem; margin-top: 1.5rem;
+    }
+    .card {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      padding: 1.5rem;
+      transition: border-color .25s, transform .25s;
+    }
+    .card:hover {
+      border-color: var(--teal);
+      transform: translateY(-3px);
+    }
+    .card-icon {
+      font-size: 2rem; margin-bottom: .75rem;
+      display: block;
+    }
+    .card h3 { font-size: 1rem; margin-bottom: .4rem; }
+    .card p { font-size: 0.88rem; margin: 0; }
+
+    /* ── STEPS ───────────────────────────────────────────── */
+    .steps { display: flex; flex-direction: column; gap: 1.5rem; margin-top: 1.5rem; }
+    .step {
+      display: flex; gap: 1.25rem; align-items: flex-start;
+    }
+    .step-num {
+      flex-shrink: 0;
+      width: 36px; height: 36px;
+      border-radius: 50%;
+      background: rgba(45,212,191,0.15);
+      border: 1.5px solid var(--teal);
+      display: flex; align-items: center; justify-content: center;
+      font-family: 'Syne', sans-serif;
+      font-weight: 700; font-size: .85rem;
+      color: var(--teal);
+    }
+    .step-body h3 { font-size: 1rem; margin-bottom: .3rem; }
+    .step-body p { font-size: .9rem; margin: 0; }
+
+    /* ── CODE BLOCK ──────────────────────────────────────── */
+    .code-block {
+      background: #0D1117;
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 1.25rem 1.5rem;
+      margin: 1rem 0;
+      overflow-x: auto;
+    }
+    .code-block pre {
+      font-family: 'Courier New', monospace;
+      font-size: .82rem; line-height: 1.6;
+      color: #7EE787;
+      white-space: pre;
+    }
+    .code-block .comment { color: #8B949E; }
+    .code-block .tag { color: #79C0FF; }
+    .code-block .attr { color: #FF7B72; }
+    .code-block .val { color: #A5D6FF; }
+
+    /* ── PLUGINS TABLE ───────────────────────────────────── */
+    .plugins-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 1rem; margin-top: 1.5rem;
+    }
+    .plugin-card {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      padding: 1.25rem;
+      display: flex; flex-direction: column; gap: .5rem;
+    }
+    .plugin-badge {
+      display: inline-block;
+      padding: 3px 10px;
+      border-radius: 100px;
+      font-size: .72rem; font-weight: 600;
+      text-transform: uppercase; letter-spacing: .05em;
+    }
+    .badge-basic { background: rgba(34,197,94,.15); color: #22C55E; border: 1px solid rgba(34,197,94,.3); }
+    .badge-extra { background: rgba(124,58,237,.15); color: #A78BFA; border: 1px solid rgba(124,58,237,.3); }
+    .plugin-card h3 { font-size: .95rem; margin: 0; }
+    .plugin-card p { font-size: .83rem; margin: 0; }
+
+    /* ── TROUBLESHOOT ────────────────────────────────────── */
+    .trouble-list { display: flex; flex-direction: column; gap: 1rem; margin-top: 1.5rem; }
+    .trouble-item {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-left: 3px solid var(--warning);
+      border-radius: 0 12px 12px 0;
+      padding: 1.25rem;
+    }
+    .trouble-item .error {
+      font-size: .85rem; font-weight: 600;
+      color: var(--warning); margin-bottom: .4rem;
+      font-family: 'Courier New', monospace;
+    }
+    .trouble-item .solution {
+      font-size: .88rem; color: var(--muted); margin: 0;
+    }
+    .trouble-item .solution strong { color: var(--success); }
+
+    /* ── USABILITY ───────────────────────────────────────── */
+    .usability-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 1rem; margin-top: 1.5rem;
+    }
+    @media (max-width: 600px) { .usability-grid { grid-template-columns: 1fr; } }
+    .usability-card {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      padding: 1.25rem;
+    }
+    .usability-card.positive { border-top: 2px solid var(--success); }
+    .usability-card.negative { border-top: 2px solid #EF4444; }
+    .usability-card h3 {
+      font-size: .9rem; margin-bottom: .75rem;
+      display: flex; align-items: center; gap: 6px;
+    }
+    .usability-card ul {
+      list-style: none; padding: 0;
+      display: flex; flex-direction: column; gap: .4rem;
+    }
+    .usability-card ul li {
+      font-size: .85rem; color: var(--muted);
+      display: flex; align-items: flex-start; gap: 8px;
+    }
+    .usability-card ul li::before {
+      content: '→'; color: var(--teal);
+      flex-shrink: 0; font-size: .8rem; margin-top: 2px;
+    }
+
+    /* ── CONCLUSION ──────────────────────────────────────── */
+    .conclusion {
+      background: linear-gradient(135deg, rgba(45,212,191,.08), rgba(124,58,237,.08));
+      border: 1px solid var(--border);
+      border-radius: 20px;
+      padding: 2.5rem;
+      margin-top: 1.5rem;
+    }
+    .conclusion h2 { margin-bottom: 1rem; }
+
+    /* ── BACK LINK ───────────────────────────────────────── */
+    .back-link {
+      display: inline-flex; align-items: center; gap: 8px;
+      color: var(--teal); text-decoration: none;
+      font-size: .9rem; font-weight: 500;
+      margin-bottom: 2rem;
+      transition: gap .2s;
+    }
+    .back-link:hover { gap: 12px; }
+
+    /* ── FOOTER ──────────────────────────────────────────── */
+    footer {
+      text-align: center;
+      padding: 3rem 2rem;
+      color: var(--muted);
+      font-size: .85rem;
+      border-top: 1px solid var(--border);
+    }
+    footer a { color: var(--teal); text-decoration: none; }
+
+    /* ── REPO BANNER ─────────────────────────────────────── */
+    .repo-banner {
+      display: flex; align-items: center; justify-content: space-between;
+      flex-wrap: wrap; gap: 1rem;
+      background: rgba(124,58,237,.1);
+      border: 1px solid rgba(124,58,237,.3);
+      border-radius: 14px;
+      padding: 1.25rem 1.5rem;
+      margin-top: 1.5rem;
+    }
+    .repo-banner p { margin: 0; font-size: .9rem; }
+    .repo-banner a {
+      display: inline-flex; align-items: center; gap: 8px;
+      background: var(--purple);
+      color: white; text-decoration: none;
+      padding: 8px 20px; border-radius: 8px;
+      font-size: .88rem; font-weight: 600;
+      transition: opacity .2s;
+      white-space: nowrap;
+    }
+    .repo-banner a:hover { opacity: .85; }
+
+    /* ── SCROLL INDICATOR ────────────────────────────────── */
+    .scroll-progress {
+      position: fixed; top: 0; left: 0;
+      height: 2px; background: var(--teal);
+      z-index: 200; transition: width .1s;
+      width: 0%;
+    }
+  </style>
+</head>
+<body>
+
+<div class="scroll-progress" id="progress"></div>
+
+<nav>
+  <a href="https://robertobornos.github.io" class="nav-logo">Roberto.</a>
+  <ul class="nav-links">
+    <li><a href="#introduccion">Intro</a></li>
+    <li><a href="#plugins">Plugins</a></li>
+    <li><a href="#proceso">Proceso</a></li>
+    <li><a href="#problemas">Problemas</a></li>
+    <li><a href="#usabilidad">Usabilidad</a></li>
+    <li><a href="#conclusion">Conclusión</a></li>
+  </ul>
+</nav>
+
+<!-- ══ HERO ══════════════════════════════════════════════════ -->
+<section class="hero" id="introduccion">
+  <div class="hero-tag">
+    <span class="dot"></span>
+    DAH · Unidad 6 · Junio 2026
+  </div>
+  <h1>De Web App a<br /><span>App Nativa</span><br />con Capacitor</h1>
+  <p>
+    Cómo convertí <strong>Mi Tienda</strong> —una app Ionic + Angular— en una aplicación
+    nativa para Android integrando acceso a Cámara, GPS, Haptics y Share
+    mediante los plugins de Capacitor.
+  </p>
+  <div class="hero-meta">
+    <span>👤 <strong>Roberto Pinto Gutiérrez</strong></span>
+    <span>📚 <strong>Desarrollo de Aplicaciones Híbridas · 2DAW</strong></span>
+    <span>📅 <strong>Junio 2026</strong></span>
+  </div>
+</section>
+
+<div class="divider"></div>
+
+<!-- ══ QUÉ ES CAPACITOR ══════════════════════════════════════ -->
+<section>
+  <p class="section-label">Contexto técnico</p>
+  <h2>¿Qué es Capacitor y por qué lo usamos?</h2>
+  <p>
+    <strong>Capacitor</strong> es el puente que permite que una aplicación web desarrollada
+    con Ionic se ejecute como una aplicación nativa en Android e iOS. Actúa como una capa
+    intermedia que envuelve el proyecto web en un contenedor nativo y expone las APIs del
+    hardware del dispositivo —cámara, GPS, vibración— a través de plugins JavaScript.
+  </p>
+  <p>
+    A diferencia de soluciones antiguas como Cordova, Capacitor está diseñado para trabajar
+    de forma nativa con los sistemas de build modernos y es el estándar recomendado por el
+    equipo de Ionic Framework desde la versión 4.
+  </p>
+  <div class="cards">
+    <div class="card">
+      <span class="card-icon">🌐</span>
+      <h3>Funciona en Web</h3>
+      <p>Con PWA Elements, los plugins funcionan también en el navegador de escritorio para desarrollo.</p>
+    </div>
+    <div class="card">
+      <span class="card-icon">📱</span>
+      <h3>Nativo en Android</h3>
+      <p>Genera un proyecto Android Studio completo con acceso real al hardware del dispositivo.</p>
+    </div>
+    <div class="card">
+      <span class="card-icon">🔌</span>
+      <h3>Plugins oficiales</h3>
+      <p>@capacitor/camera, @capacitor/geolocation, @capacitor/haptics y @capacitor/share.</p>
+    </div>
+  </div>
+</section>
+
+<div class="divider"></div>
+
+<!-- ══ PLUGINS ═══════════════════════════════════════════════ -->
+<section id="plugins">
+  <p class="section-label">Plugins implementados</p>
+  <h2>Los 4 plugins de hardware</h2>
+  <p>Se han implementado dos plugins del reto básico y dos plugins adicionales para alcanzar la máxima calificación.</p>
+
+  <div class="plugins-grid">
+    <div class="plugin-card">
+      <span class="plugin-badge badge-basic">Básico</span>
+      <h3>📷 @capacitor/camera</h3>
+      <p>Acceso a la cámara del dispositivo. Devuelve la foto en formato base64 (DataUrl) para mostrarla directamente en un <code>ion-img</code>.</p>
+    </div>
+    <div class="plugin-card">
+      <span class="plugin-badge badge-basic">Básico</span>
+      <h3>📍 @capacitor/geolocation</h3>
+      <p>Obtiene las coordenadas GPS del dispositivo (latitud, longitud y precisión). Genera un enlace directo a Google Maps.</p>
+    </div>
+    <div class="plugin-card">
+      <span class="plugin-badge badge-extra">Extra</span>
+      <h3>📳 @capacitor/haptics</h3>
+      <p>Vibración táctil del dispositivo. Se usa como feedback al guardar nombre, tomar foto y añadir productos al catálogo.</p>
+    </div>
+    <div class="plugin-card">
+      <span class="plugin-badge badge-extra">Extra</span>
+      <h3>📤 @capacitor/share</h3>
+      <p>Abre el diálogo nativo de compartir del sistema operativo para compartir la foto tomada o la ubicación GPS obtenida.</p>
+    </div>
+  </div>
+</section>
+
+<div class="divider"></div>
+
+<!-- ══ PROCESO ════════════════════════════════════════════════ -->
+<section id="proceso">
+  <p class="section-label">Implementación paso a paso</p>
+  <h2>Proceso de desarrollo</h2>
+
+  <div class="steps">
+    <div class="step">
+      <div class="step-num">1</div>
+      <div class="step-body">
+        <h3>Instalar plugins y compilar</h3>
+        <p>Se instalaron los 4 plugins de Capacitor y PWA Elements. Luego se compiló el proyecto con <code>ionic build</code> para generar la carpeta <code>www/</code> necesaria para Capacitor.</p>
+      </div>
+    </div>
+    <div class="step">
+      <div class="step-num">2</div>
+      <div class="step-body">
+        <h3>Añadir plataforma Android</h3>
+        <p>Con <code>ionic cap add android</code> se generó el proyecto nativo de Android Studio. Capacitor detectó automáticamente los 7 plugins disponibles.</p>
+      </div>
+    </div>
+    <div class="step">
+      <div class="step-num">3</div>
+      <div class="step-body">
+        <h3>Configurar AndroidManifest.xml</h3>
+        <p>Se añadieron los permisos necesarios: CAMERA, READ/WRITE_EXTERNAL_STORAGE, ACCESS_FINE_LOCATION, ACCESS_COARSE_LOCATION e INTERNET. También se añadió <code>usesCleartextTraffic="true"</code> para el tráfico HTTP en desarrollo.</p>
+      </div>
+    </div>
+    <div class="step">
+      <div class="step-num">4</div>
+      <div class="step-body">
+        <h3>Crear servicios PhotoService y LocationService</h3>
+        <p>Se encapsuló la lógica de cada plugin en servicios inyectables independientes, siguiendo el patrón de arquitectura establecido en la UT4.</p>
+      </div>
+    </div>
+    <div class="step">
+      <div class="step-num">5</div>
+      <div class="step-body">
+        <h3>Integrar en la página de Ajustes</h3>
+        <p>Se añadieron las secciones Cámara, GPS y los botones de Share en la página de Ajustes. Los Haptics se integraron en guardar nombre, tomar foto y añadir productos.</p>
+      </div>
+    </div>
+    <div class="step">
+      <div class="step-num">6</div>
+      <div class="step-body">
+        <h3>Compilar y ejecutar en Android Studio</h3>
+        <p>Con <code>ionic build && npx cap sync && npx cap open android</code> se abrió Android Studio, se sincronizó Gradle y se ejecutó la app en el emulador Pixel 7 API 36.</p>
+      </div>
+    </div>
+  </div>
+
+  <p class="section-label" style="margin-top: 2.5rem;">Permisos en AndroidManifest.xml</p>
+  <div class="code-block">
+    <pre><span class="comment">&lt;!-- Permisos Cámara --&gt;</span>
+<span class="tag">&lt;uses-permission</span> <span class="attr">android:name</span>=<span class="val">"android.permission.CAMERA"</span> <span class="tag">/&gt;</span>
+<span class="tag">&lt;uses-permission</span> <span class="attr">android:name</span>=<span class="val">"android.permission.READ_EXTERNAL_STORAGE"</span><span class="tag">/&gt;</span>
+<span class="tag">&lt;uses-permission</span> <span class="attr">android:name</span>=<span class="val">"android.permission.WRITE_EXTERNAL_STORAGE"</span><span class="tag">/&gt;</span>
+
+<span class="comment">&lt;!-- Permisos GPS --&gt;</span>
+<span class="tag">&lt;uses-permission</span> <span class="attr">android:name</span>=<span class="val">"android.permission.ACCESS_FINE_LOCATION"</span> <span class="tag">/&gt;</span>
+<span class="tag">&lt;uses-permission</span> <span class="attr">android:name</span>=<span class="val">"android.permission.ACCESS_COARSE_LOCATION"</span> <span class="tag">/&gt;</span>
+
+<span class="comment">&lt;!-- Red + Cleartext HTTP --&gt;</span>
+<span class="tag">&lt;uses-permission</span> <span class="attr">android:name</span>=<span class="val">"android.permission.INTERNET"</span> <span class="tag">/&gt;</span></pre>
+  </div>
+</section>
+
+<div class="divider"></div>
+
+<!-- ══ TROUBLESHOOTING ═══════════════════════════════════════ -->
+<section id="problemas">
+  <p class="section-label">Resolución de problemas</p>
+  <h2>Errores encontrados y soluciones</h2>
+  <p>Durante el desarrollo se encontraron varios errores técnicos que requirieron investigación y resolución.</p>
+
+  <div class="trouble-list">
+    <div class="trouble-item">
+      <p class="error">ERROR: Could not find the web assets directory: ./www</p>
+      <p class="solution">
+        Causa: Se ejecutó <code>npx cap sync</code> sin haber compilado el proyecto antes.<br/>
+        Solución: <strong>Ejecutar <code>ionic build</code> antes de <code>npx cap sync</code></strong>. Capacitor necesita la carpeta <code>www/</code> generada por el build de Angular.
+      </p>
+    </div>
+    <div class="trouble-item">
+      <p class="error">ERROR: Cleartext HTTP traffic to localhost not permitted</p>
+      <p class="solution">
+        Causa: Android bloquea por defecto el tráfico HTTP (no HTTPS) en apps nativas.<br/>
+        Solución: <strong>Añadir <code>android:usesCleartextTraffic="true"</code></strong> en el tag <code>&lt;application&gt;</code> del AndroidManifest.xml.
+      </p>
+    </div>
+    <div class="trouble-item">
+      <p class="error">ERROR: Camera plugin not working in browser (no UI)</p>
+      <p class="solution">
+        Causa: Los PWA Elements no estaban inicializados antes de arrancar la aplicación.<br/>
+        Solución: <strong>Añadir <code>defineCustomElements(window)</code></strong> en <code>main.ts</code> antes de <code>bootstrapApplication()</code>.
+      </p>
+    </div>
+    <div class="trouble-item">
+      <p class="error">npm error: could not determine executable to run (npx cap sync fuera de mi-tienda)</p>
+      <p class="solution">
+        Causa: Los comandos npm/npx se ejecutaron en el directorio incorrecto.<br/>
+        Solución: <strong>Navegar siempre a la carpeta del proyecto</strong> con <code>cd Desktop\DAH\mi-tienda</code> antes de ejecutar cualquier comando.
+      </p>
+    </div>
+  </div>
+</section>
+
+<div class="divider"></div>
+
+<!-- ══ USABILIDAD ════════════════════════════════════════════ -->
+<section id="usabilidad">
+  <p class="section-label">Análisis de experiencia de usuario</p>
+  <h2>Informe de usabilidad en el emulador</h2>
+  <p>
+    La app se probó en el emulador <strong>Medium Phone API 36</strong> de Android Studio.
+    A continuación se recoge el análisis de usabilidad comparando la experiencia web con la experiencia nativa.
+  </p>
+
+  <div class="usability-grid">
+    <div class="usability-card positive">
+      <h3>✅ Aspectos positivos</h3>
+      <ul>
+        <li>La UI es idéntica en web y móvil gracias a los componentes Ionic adaptativos</li>
+        <li>El feedback táctil (Haptics) mejora notablemente la experiencia al confirmar acciones</li>
+        <li>La cámara se activa con permiso nativo y la foto se muestra en la app instantáneamente</li>
+        <li>El diálogo de Share nativo es familiar para el usuario y muy intuitivo</li>
+        <li>El ion-back-button se integra con la navegación nativa de Android</li>
+        <li>El dark mode se aplica automáticamente según el tema del sistema</li>
+      </ul>
+    </div>
+    <div class="usability-card negative">
+      <h3>⚠️ Aspectos a mejorar</h3>
+      <ul>
+        <li>En el emulador el GPS devuelve coordenadas simuladas, no reales</li>
+        <li>El catálogo aparece vacío porque el emulador no accede a localhost:3000</li>
+        <li>Los tiempos de carga del emulador son más lentos que en un dispositivo físico</li>
+        <li>La cámara del emulador muestra una escena virtual, no una cámara real</li>
+        <li>Algunos toasts quedan tapados por la barra de navegación del emulador</li>
+      </ul>
+    </div>
+  </div>
+
+  <div style="margin-top: 1.5rem;">
+    <h3>Comparativa Web vs Nativo</h3>
+    <div class="cards" style="margin-top: 1rem;">
+      <div class="card">
+        <span class="card-icon">🌐</span>
+        <h3>Versión Web</h3>
+        <p>Cámara simulada con PWA Elements. GPS usando la API del navegador. Sin Haptics (no soportado en desktop). Share con Web Share API.</p>
+      </div>
+      <div class="card">
+        <span class="card-icon">📱</span>
+        <h3>Versión Nativa</h3>
+        <p>Cámara real del dispositivo. GPS con alta precisión y chip dedicado. Haptics con motores de vibración físicos. Share con el diálogo nativo del SO.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<div class="divider"></div>
+
+<!-- ══ CONCLUSIÓN ════════════════════════════════════════════ -->
+<section id="conclusion">
+  <div class="conclusion">
+    <p class="section-label">Reflexión final</p>
+    <h2>Conclusión</h2>
+    <p>
+      La conversión de <strong>Mi Tienda</strong> a aplicación nativa con Capacitor ha sido
+      el paso más transformador del proyecto. Partir de una aplicación web funcional y, en
+      pocos comandos, obtener una app Android con acceso real al hardware del dispositivo
+      demuestra el poder del enfoque híbrido.
+    </p>
+    <p>
+      Lo más valioso ha sido comprobar cómo los patrones de arquitectura establecidos en
+      unidades anteriores —servicios inyectables, componentes standalone, separación de
+      responsabilidades— facilitan enormemente la integración de nuevas funcionalidades
+      como los plugins nativos.
+    </p>
+    <p>
+      El proceso también ha reforzado la importancia de la resolución de problemas técnicos:
+      cada error encontrado durante la configuración de Capacitor y Android Studio fue una
+      oportunidad de entender más profundamente cómo funciona el puente entre el mundo web
+      y el mundo nativo.
+    </p>
+  </div>
+
+  <div class="repo-banner">
+    <p>🔗 Código fuente completo disponible en GitHub</p>
+    <a href="https://github.com/Robertobornos/mi-tienda-dah" target="_blank">
+      Ver repositorio →
+    </a>
+  </div>
+</section>
+
+<footer>
+  <p>Escrito por <a href="https://robertobornos.github.io">Roberto Pinto Gutiérrez</a> · DAH UT6 · Junio 2026</p>
+  <p style="margin-top: .5rem; font-size: .8rem;">Desarrollo de Aplicaciones Híbridas · 2.º DAW</p>
+</footer>
+
+<script>
+  // Scroll progress bar
+  window.addEventListener('scroll', () => {
+    const scrolled = window.scrollY;
+    const total = document.body.scrollHeight - window.innerHeight;
+    document.getElementById('progress').style.width = (scrolled / total * 100) + '%';
+  });
+</script>
+
+</body>
+</html>
